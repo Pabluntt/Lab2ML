@@ -1,0 +1,6 @@
+Guia de regresion de edad
+========================
+
+Se implemento un pipeline PCA + LinearRegression y funciones de ayuda.
+Ajuste: GridSearchCV con scoring=neg_mean_absolute_error.
+Metricas sugeridas: MAE, RMSE, R2.
