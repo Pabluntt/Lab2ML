@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import matplotlib
 
@@ -112,6 +113,68 @@ def save_regression_scatter(
     ax.set_xlabel("Edad real")
     ax.set_ylabel("Edad predicha")
     ax.set_title("Predicho vs Real - Regresion de edad")
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+
+def save_gender_validation_curve_figure(
+    grid_search: Any,
+    output_path: str | Path,
+) -> None:
+    """Curva de validacion: score CV medio vs componentes PCA para genero."""
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    cv_results = grid_search.cv_results_
+    components = [int(p) for p in cv_results["param_pca__n_components"]]
+    mean_scores = cv_results["mean_test_score"]
+    std_scores = cv_results["std_test_score"]
+
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.errorbar(components, mean_scores, yerr=std_scores, fmt="-o", capsize=5, color="#4C78A8")
+    ax.set_xlabel("Componentes PCA")
+    ax.set_ylabel("F1-score (CV medio)")
+    ax.set_title("Curva de validacion - Clasificador de genero")
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+
+def save_scree_plot_figure(
+    X_train: np.ndarray,
+    output_path: str | Path,
+    n_components: int = 50,
+) -> None:
+    """Grafico de sedimentacion (scree plot) de la varianza explicada por PCA."""
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    pca = PCA(n_components=n_components)
+    pca.fit(X_train)
+
+    explained = pca.explained_variance_ratio_
+    cumulative = np.cumsum(explained)
+
+    fig, ax1 = plt.subplots(figsize=(8, 4))
+
+    ax1.bar(range(1, len(explained) + 1), explained, alpha=0.7, color="#54A24B", label="Varianza explicada individual")
+    ax1.set_xlabel("Componente principal")
+    ax1.set_ylabel("Varianza explicada (proporcion)")
+    ax1.set_title("Scree plot - Varianza explicada por componente PCA")
+    ax1.grid(True, alpha=0.3)
+
+    ax2 = ax1.twinx()
+    ax2.plot(range(1, len(cumulative) + 1), cumulative, "-o", color="#F58518", markersize=4, label="Varianza acumulada")
+    ax2.set_ylabel("Varianza explicada acumulada")
+
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc="center right")
+
     fig.tight_layout()
     fig.savefig(output_path, dpi=150, bbox_inches="tight")
     plt.close(fig)

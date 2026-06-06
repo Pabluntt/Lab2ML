@@ -22,8 +22,10 @@ from src.regression import (
 from src.visualization import (
     save_confusion_matrix_figure,
     save_dataset_distribution_figure,
+    save_gender_validation_curve_figure,
     save_pca_projection_figure,
     save_regression_scatter,
+    save_scree_plot_figure,
 )
 
 
@@ -90,6 +92,10 @@ def run_gender_training_workflow(config: Any) -> dict[str, Any]:
     )
 
     print("[5/5] Guardando artefactos...")
+    save_gender_validation_curve_figure(
+        grid_search=training_result.grid_search,
+        output_path=config.figures_dir / "curva_validacion_genero.png",
+    )
     save_gender_classifier(
         model=training_result.best_estimator,
         output_path=config.models_dir / "pipeline_genero.pkl",
@@ -177,6 +183,10 @@ def run_age_training_workflow(config: Any) -> dict[str, Any]:
     )
 
     print("[5/6] Guardando artefactos...")
+    save_scree_plot_figure(
+        X_train=split.X_train,
+        output_path=config.figures_dir / "scree_plot_pca.png",
+    )
     save_age_regressor(
         model=age_grid.best_estimator_,
         output_path=config.models_dir / "pipeline_edad.pkl",

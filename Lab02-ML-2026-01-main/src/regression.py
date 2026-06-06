@@ -7,7 +7,7 @@ import joblib
 import numpy as np
 from pathlib import Path
 from sklearn.decomposition import PCA
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
@@ -29,19 +29,19 @@ class AgeRegressionGuide:
             "Guia de regresion de edad\n"
             "========================\n"
             "\n"
-            "Se implemento un pipeline PCA + Ridge (regresion lineal regularizada).\n"
+            "Se implemento un pipeline PCA + LinearRegression.\n"
             "Ajuste: GridSearchCV con scoring=neg_mean_absolute_error.\n"
             "Metricas sugeridas: MAE, RMSE, R2.\n"
         )
 
 
 def build_age_regression_pipeline(random_state: int) -> Any:
-    """Construye el pipeline de regresion: PCA -> Ridge."""
+    """Construye el pipeline de regresion: PCA -> LinearRegression."""
 
     return Pipeline(
         [
             ("pca", PCA(whiten=True, random_state=random_state)),
-            ("reg", Ridge(random_state=random_state)),
+            ("reg", LinearRegression()),
         ]
     )
 
@@ -55,7 +55,7 @@ def train_age_regressor(
     n_jobs: int = -1,
     verbose: int = 1,
 ) -> GridSearchCV:
-    """Entrena un regresor de edad usando GridSearchCV sobre pca__n_components y reg__alpha.
+    """Entrena un regresor de edad usando GridSearchCV sobre pca__n_components.
 
     Retorna el objeto GridSearchCV ajustado.
     """
@@ -70,10 +70,7 @@ def train_age_regressor(
     pipeline = build_age_regression_pipeline(random_state=random_state)
     grid_search = GridSearchCV(
         estimator=pipeline,
-        param_grid={
-            "pca__n_components": safe_components,
-            "reg__alpha": [0.1, 1, 10, 100],
-        },
+        param_grid={"pca__n_components": safe_components},
         scoring="neg_mean_absolute_error",
         cv=cv_folds,
         n_jobs=n_jobs,
