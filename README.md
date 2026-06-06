@@ -1,20 +1,58 @@
-# UTKFace - Género y Edad
 
-Aplicación simple de Streamlit para predecir género y edad a partir de una imagen facial.
+# UTKFace — Clasificación de Género y Regresión de Edad
 
-## Archivos importantes
+Pipeline de clasificación de género (PCA + GaussianNB) y regresión de edad (PCA + LinearRegression) sobre el dataset UTKFace, con interfaz visual en Streamlit.
 
-- `app.py`: app principal de Streamlit.
-- `pipeline_genero.pkl`: modelo entrenado para clasificación de género.
-- `pipeline_edad.pkl`: modelo entrenado para regresión de edad.
+## Requisitos
 
-## Cómo ejecutar
+- Python 3.10+
+- Las dependencias se listan en `requirements.txt`
+
+## Instalación
 
 ```bash
+python -m venv .venv
+.venv\Scripts\activate      # Windows
 pip install -r requirements.txt
-streamlit run app.py
 ```
 
-## Nota
+## Entrenar modelos
 
-Si quieres mejorar las predicciones, vuelve a entrenar los pipelines desde `laboratorio_02_utkface_genero_edad_colab.ipynb` y vuelve a generar los archivos `.pkl`.
+```bash
+cd Lab02-ML-2026-01-main
+python main.py
+```
+
+Esto entrena ambos modelos y guarda:
+
+- `artifacts/models/pipeline_genero.pkl`
+- `artifacts/models/pipeline_edad.pkl`
+- Figuras en `artifacts/figures/`
+- Métricas en `artifacts/reports/`
+
+## Ejecutar app (Streamlit)
+
+```bash
+cd Lab02-ML-2026-01-main
+streamlit run main_visual.py
+```
+
+## Estructura
+
+```
+Lab02-ML-2026-01-main/
+├── main.py              # Orquestador de entrenamiento
+├── main_visual.py       # App Streamlit
+├── src/
+│   ├── config.py        # Parámetros globales
+│   ├── data.py          # Carga y preprocesamiento
+│   ├── preprocessing.py # Detección facial
+│   ├── classification.py# Clasificador de género
+│   ├── regression.py    # Regresor de edad
+│   ├── training.py      # Flujos de entrenamiento
+│   └── visualization.py # Generación de figuras
+├── dataset/             # Imágenes UTKFace
+└── artifacts/           # Modelos, figuras, reportes
+```
+
+Ver todos: `python main.py --help`
